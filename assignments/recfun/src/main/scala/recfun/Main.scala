@@ -1,6 +1,7 @@
 package recfun
 
 import common._
+import scala.util.Sorting
 
 object Main {
   def main(args: Array[String]) {
@@ -22,7 +23,7 @@ object Main {
         if (n == 0) acc
         else fact(acc * n, n - 1)
       }
-      fact(1, n);
+      fact(1, n)
     }
 
     factorial(r) / (factorial(c) * factorial(r - c))
@@ -33,7 +34,7 @@ object Main {
    */
   def balance(chars: List[Char]): Boolean = {
     def loop(chars: List[Char], open: Int): Boolean = {
-      if (chars.isEmpty) (open == 0)
+      if (chars.isEmpty) open == 0
       else if (chars.head == '(') loop(chars.tail, open + 1)
       else if (chars.head == ')')
         if (open > 0) loop(chars.tail, open - 1)
@@ -46,5 +47,15 @@ object Main {
   /**
    * Exercise 3
    */
-  def countChange(money: Int, coins: List[Int]): Int = ???
+  def countChange(money: Int, coins: List[Int]): Int = {
+    val sorted = coins.sorted(Ordering[Int].reverse)
+    def calc(sortedCoins: List[Int], accum: Int, combinations: Int): Int = {
+      if(sortedCoins.isEmpty) combinations
+      else if(sortedCoins.head + accum > money) calc(sortedCoins, accum, combinations)
+      else if(sortedCoins.head + accum < money) calc(sortedCoins, accum + sortedCoins.head, combinations)
+      else if(sortedCoins.head + accum == money) combinations
+      else 0
+    }
+    calc(sorted, 0, 0)
+  }
 }
