@@ -53,30 +53,11 @@ object Main {
    * Exercise 3
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-    val sorted = coins.sorted(Ordering[Int].reverse)
     def calc(sortedCoins: List[Int], accum: Int, seq: List[Int]): Int = {
-      /*
-      if (sortedCoins.isEmpty) 0
-      else {
-       println(sortedCoins.head + ", " + accum)
-       // calc(sortedCoins.tail, accum, combinations) + {
-          if (sortedCoins.head + accum > money) {
-            println("if")
-            0
-          }
-          else if (sortedCoins.head + accum < money) {
-            println("else if")
-            combinations + calc(sortedCoins, accum + sortedCoins.head, combinations) + calc(sortedCoins.tail, accum, combinations)
-          }
-          else {
-            println("else")
-            1
-          }
-        //}
-
-      }*/
-
-      if(sortedCoins.isEmpty || accum > money) 0
+      if(sortedCoins.isEmpty || accum > money) {
+        println("Failed match on " + seq + "(" + accum + ")")
+        0
+      }
       else if (accum+sortedCoins.head==money) {
         val wut = seq :+ sortedCoins.head
         println("Found match on " + wut + "(" + accum + "," + sortedCoins.head + ")")
@@ -87,17 +68,8 @@ object Main {
         calc(sortedCoins,accum+sortedCoins.head, seq:+sortedCoins.head) + calc(sortedCoins.tail,accum, seq)
       }
     }
-/*
-    def loop(sortedCoins: List[Int]): Int = {
-      if(sortedCoins.isEmpty) 0
-      else {
-        val accum = calc(sortedCoins,0,0);
-        println("Accum: " + accum)
-        accum + loop(sortedCoins.tail)
-      }
-    }
-*/
-    calc(sorted,0, Nil);
+
+    calc(coins.sorted(Ordering[Int].reverse),0, Nil)
   }
 
 }
