@@ -18,15 +18,15 @@ object Main {
    */
   def pascal(c: Int, r: Int): Int = {
 
-    def factorial(n: Int): Int = {
-      def fact(acc: Int, n: Int): Int = {
+    def myfactorial(n: Int): Int = {
+      def loop(acc: Int, n: Int): Int = {
         if (n == 0) acc
-        else fact(acc * n, n - 1)
+        else loop(acc * n, n - 1)
       }
-      fact(1, n)
+      loop(1, n)
     }
 
-    factorial(r) / (factorial(c) * factorial(r - c))
+    (myfactorial(r) / (myfactorial(c) * myfactorial(r - c))).toInt
   }
 
   /**
@@ -53,23 +53,13 @@ object Main {
    * Exercise 3
    */
   def countChange(money: Int, coins: List[Int]): Int = {
-    def calc(sortedCoins: List[Int], accum: Int, seq: List[Int]): Int = {
-      if(sortedCoins.isEmpty || accum > money) {
-        println("Failed match on " + seq + "(" + accum + ")")
-        0
-      }
-      else if (accum+sortedCoins.head==money) {
-        val wut = seq :+ sortedCoins.head
-        println("Found match on " + wut + "(" + accum + "," + sortedCoins.head + ")")
-        1 + calc(sortedCoins.tail,accum, seq)
-      }
-      else {
-        println("Checking...(" + seq + "," + accum + "," + sortedCoins.head + ")")
-        calc(sortedCoins,accum+sortedCoins.head, seq:+sortedCoins.head) + calc(sortedCoins.tail,accum, seq)
-      }
+    def calc(sortedCoins: List[Int], accum: Int): Int = {
+      if(sortedCoins.isEmpty || accum > money) 0
+      else if (accum+sortedCoins.head==money) 1 + calc(sortedCoins.tail,accum)
+      else calc(sortedCoins,accum+sortedCoins.head) + calc(sortedCoins.tail,accum)
     }
 
-    calc(coins.sorted(Ordering[Int].reverse),0, Nil)
+    calc(coins.sorted(Ordering[Int].reverse),0)
   }
 
 }
