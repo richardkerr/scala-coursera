@@ -26,7 +26,7 @@ object Main {
       loop(1, n)
     }
 
-    (myfactorial(r) / (myfactorial(c) * myfactorial(r - c))).toInt
+    (myfactorial(r) / (myfactorial(c) * myfactorial(r - c)))
   }
 
   /**
