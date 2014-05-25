@@ -118,9 +118,8 @@ object Huffman {
    */
   def singleton(trees: List[CodeTree]): Boolean = {
     trees match {
-      case Fork(_,_,_,_)::_ => false
-      case Nil => false
-      case _ => true
+      case Leaf(_,_)::Nil => true
+      case _ => false
     }
   }
 
@@ -136,7 +135,16 @@ object Huffman {
    * If `trees` is a list of less than two elements, that list should be returned
    * unchanged.
    */
-  def combine(trees: List[CodeTree]): List[CodeTree] = ???
+  def combine(trees: List[CodeTree]): List[CodeTree] = {
+    def combineIter(combineTrees: List[CodeTree]): List[CodeTree] = {
+      combineTrees match {
+        case _ :: _ :: Nil => combineTrees
+        case x :: y :: remain => combineIter(new Fork(x,y,chars(x):::chars(y),weight(x)+weight(y)) :: remain)
+      }
+    }
+
+    if(singleton(trees)) trees else combineIter(trees)
+  }
 
   /**
    * This function will be called in the following way:
