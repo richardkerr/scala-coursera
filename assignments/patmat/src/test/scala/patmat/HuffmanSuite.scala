@@ -45,7 +45,11 @@ class HuffmanSuite extends FunSuite {
 
   test("decode and encode a very short text should be identity") {
     new TestTrees {
-      assert(decode(t1, encode(t1)("ab".toList)) === "ab".toList)
+      val encoded = encode(t1)("ab".toList)
+      val decoded = decode(t1, encoded)
+      println("encoded: "+encoded)
+      println("decoded: "+decoded)
+      assert(decoded === "ab".toList)
     }
   }
 
@@ -62,8 +66,34 @@ class HuffmanSuite extends FunSuite {
   test("singleton") {
     new TestTrees {
       assert(singleton(single))
-      assert(!singleton(t1::Nil))
-      //assert(!singleton(Nil))
+      assert(singleton(t1::Nil))
+      assert(!singleton(Nil))
     }
   }
+
+  test("make tree") {
+    new TestTrees {
+      val chars: List[Char] = string2Chars("dabaaacc")
+      val codeTree: CodeTree = createCodeTree(chars)
+      println(codeTree)
+
+    }
+  }
+
+  test("decode secret") {
+    new TestTrees {
+      println(decodedSecret)
+    }
+  }
+
+  test("encode a") {
+    new TestTrees {
+      val encoded = encode(t1)("abba".toList)
+      val decoded = decode(t1, encoded)
+      println("encoded: "+encoded)
+      println("decoded: "+decoded)
+      assert(decoded === "abba".toList)
+    }
+  }
+
 }
