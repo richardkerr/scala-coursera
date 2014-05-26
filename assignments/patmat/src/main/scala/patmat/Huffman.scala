@@ -95,6 +95,8 @@ object Huffman {
     timesCounter(chars, Nil)
   }
 
+  def weightComparitor(l1: CodeTree, l2: CodeTree) = weight(l1) < weight(l2)
+
   /**
    * Returns a list of `Leaf` nodes for a given frequency table `freqs`.
    *
@@ -103,10 +105,9 @@ object Huffman {
    * of a leaf is the frequency of the character.
    */
   def makeOrderedLeafList(freqs: List[(Char, Int)]): List[Leaf] = {
-    def leafComparitor(l1: Leaf, l2: Leaf) = l1.weight < l2.weight
     def leafListIter(freqTail: List[(Char, Int)], leafList: List[Leaf]): List[Leaf] = {
       freqTail match {
-        case Nil => leafList.sortWith(leafComparitor)
+        case Nil => leafList.sortWith(weightComparitor)
         case (char, int) :: xs => leafListIter(xs, Leaf(char, int) :: leafList)
       }
     }
@@ -139,18 +140,14 @@ object Huffman {
     // Ordered insert
     def insert(fork: Fork, list: List[CodeTree]): List[CodeTree] = {
       list match {
-        case Fork(l,r,c,w)::xs => if(w>=fork.weight) fork::list else Fork(l,r,c,w)::insert(fork,xs)
-        case Leaf(c,w)::xs => if(w>=fork.weight) fork::list else Leaf(c,w)::insert(fork,xs)
+        case x::xs => if(weight(x)>=fork.weight) fork::list else x::insert(fork,xs)
         case _ => List(fork)
       }
     }
 
     trees match {
-      case _ :: Nil => trees
-      case Nil => trees
-      case x :: y :: remain => {
-        insert(Fork(x, y, chars(x) ::: chars(y), weight(x) + weight(y)),remain)
-      }
+      case x :: y :: remain => (makeCodeTree(x,y)::remain).sortWith(weightComparitor)
+      case _ => trees
     }
   }
 
@@ -201,13 +198,13 @@ object Huffman {
     def decodeIter(t: CodeTree, bit: List[Bit], chars: List[Char]): List[Char] = {
       t match {
         case Leaf(char, _) => {
-          if (bit.isEmpty) {
-            char :: chars
-          } else {
-            char :: decodeIter(tree, bit, chars) ::: chars
-          }
+          if (bit.isEmpty) char :: chars
+          else char :: decodeIter(tree, bit, chars) ::: chars
         }
-        case Fork(l, r, _, _) => if (bit.head == 0) decodeIter(l, bit.tail, chars) else decodeIter(r, bit.tail, chars)
+        case Fork(l, r, _, _) => {
+          if (bit.head == 0) decodeIter(l, bit.tail, chars)
+          else decodeIter(r, bit.tail, chars)
+        }
       }
     }
     decodeIter(tree, bits, Nil)
@@ -244,18 +241,12 @@ object Huffman {
     def encodeLetter(tree: CodeTree, char: Char, bits: List[Bit]): List[Bit] = {
       tree match {
         case Fork(l, r, chars, _) => {
-          if (chars.contains(char)) {
-            encodeLetter(r, char, bits:::1::Nil) ::: encodeLetter(l, char, bits:::0::Nil)
-          } else {
-            Nil
-          }
+          if (chars.contains(char)) encodeLetter(r, char, bits:::1::Nil) ::: encodeLetter(l, char, bits:::0::Nil)
+          else Nil
         }
         case Leaf(c, w) => {
-          if (char == c) {
-            bits
-          } else {
-            Nil
-          }
+          if (char == c) bits
+          else Nil
         }
       }
     }
