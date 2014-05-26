@@ -232,10 +232,18 @@ object Huffman {
     def encodeLetter(tree: CodeTree, char: Char, bits: List[Bit]): List[Bit] = {
       tree match {
         case Fork(l, r, chars, _) => {
-          if (chars.contains(char)) bits ::: encodeLetter(r, char, 1 :: bits) ::: encodeLetter(l, char, 0 :: bits) else Nil
+          if (chars.contains(char)) {
+            encodeLetter(r, char, bits:::1::Nil) ::: encodeLetter(l, char, bits:::0::Nil)
+          } else {
+            Nil
+          }
         }
         case Leaf(c, w) => {
-          if (char == c) bits else Nil
+          if (char == c) {
+            bits
+          } else {
+            Nil
+          }
         }
       }
     }
@@ -301,15 +309,11 @@ object Huffman {
   def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = {
     val table: CodeTable = convert(tree)
     def mapTree(c: Char): List[Bit] = {
-      val a = table.collectFirst({case x if(x._1==c) => x._2}).head
-      println(a)
-      a
+      table.collectFirst({case x if(x._1==c) => x._2}).head
     }
 
     val bitlist: List[List[Bit]] = text.map(mapTree)
-    println(bitlist)
     val bits: List[Bit] = bitlist.foldLeft(List[Bit]())(_:::_)
-    println(bits)
     bits
   }
 }
