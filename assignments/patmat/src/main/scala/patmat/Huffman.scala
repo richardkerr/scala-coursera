@@ -230,14 +230,11 @@ object Huffman {
    */
   def encode(tree: CodeTree)(text: List[Char]): List[Bit] = {
     def encodeLetter(tree: CodeTree, char: Char, bits: List[Bit]): List[Bit] = {
-      println(char + " " + bits)
       tree match {
         case Fork(l, r, chars, _) => {
-          println("fork: " + chars)
           if (chars.contains(char)) bits ::: encodeLetter(r, char, 1 :: bits) ::: encodeLetter(l, char, 0 :: bits) else Nil
         }
         case Leaf(c, w) => {
-          println("leaf: " + char)
           if (char == c) bits else Nil
         }
       }
@@ -246,7 +243,6 @@ object Huffman {
       if (text.isEmpty) Nil
       else {
         val letter = encodeLetter(tree, text.head, Nil)
-        println("letter: " + letter)
         letter ::: encodeIter(tree, text.tail)
       }
     }
@@ -279,7 +275,7 @@ object Huffman {
   def convert(tree: CodeTree): CodeTable = {
     def convertIter(tree: CodeTree, bits: List[Bit]): CodeTable = {
       tree match {
-        case Fork(l,r,_,_) => mergeCodeTables(convertIter(l,0::bits), convertIter(r,1::bits))
+        case Fork(l,r,_,_) => mergeCodeTables(convertIter(l,bits:::0::Nil), convertIter(r,bits:::1::Nil))
         case Leaf(c,_) => (c,bits) :: Nil
       }
     }
@@ -305,11 +301,13 @@ object Huffman {
   def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = {
     val table: CodeTable = convert(tree)
     def mapTree(c: Char): List[Bit] = {
-      table.collectFirst({case x if(x._1==c) => x._2}).head
+      val a = table.collectFirst({case x if(x._1==c) => x._2}).head
+      println(a)
+      a
     }
 
     val bitlist: List[List[Bit]] = text.map(mapTree)
-    println(bitlist);
+    println(bitlist)
     val bits: List[Bit] = bitlist.foldLeft(List[Bit]())(_:::_)
     println(bits)
     bits

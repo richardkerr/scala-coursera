@@ -106,7 +106,15 @@ class HuffmanSuite extends FunSuite {
 
   test("quickEncode") {
     new TestTrees {
-      quickEncode(frenchCode)(string2Chars("HelloWorld!"))
+      val quick = quickEncode(t2)(string2Chars("dabba"))
+      val slow = encode(t2)(string2Chars("dabba"))
+      println(quick)
+      //println(slow)
+      val dequick = decode(t2,quick)
+      val deslow = decode(t2,slow)
+      println(dequick)
+      println(deslow)
+      assert(quick==slow)
 
     }
   }
