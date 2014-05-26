@@ -106,7 +106,7 @@ class HuffmanSuite extends FunSuite {
 
   test("quickEncode") {
     new TestTrees {
-      quickEncode(frenchCode,string2Chars("HelloWorld!"))
+      quickEncode(frenchCode)(string2Chars("HelloWorld!"))
 
     }
   }

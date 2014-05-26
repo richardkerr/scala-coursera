@@ -310,7 +310,7 @@ object Huffman {
 
     val bitlist: List[List[Bit]] = text.map(mapTree)
     println(bitlist);
-    val bits: List[Bit] = bitlist.foldLeft(0)(_:::_)
+    val bits: List[Bit] = bitlist.foldLeft(List[Bit]())(_:::_)
     println(bits)
     bits
   }
