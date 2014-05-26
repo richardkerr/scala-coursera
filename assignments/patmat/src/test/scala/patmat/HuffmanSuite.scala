@@ -119,4 +119,20 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("singleton combine") {
+    new TestTrees {
+      combine(single)
+      combine(Nil)
+    }
+  }
+
+  test("codetree 'sometext'") {
+    val msg = "The Huffman encoding of this message should be three hundred and fifty-two bits long".toList
+    //val msg = "Short".toList
+    var tree = createCodeTree(msg)
+    var encoded = encode(tree)(msg)
+    println("Length: " + encoded.length)
+    println("Tree: "+tree)
+    println("Encoded: "+encoded)
+  }
 }

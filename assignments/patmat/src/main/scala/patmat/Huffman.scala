@@ -136,9 +136,21 @@ object Huffman {
    * unchanged.
    */
   def combine(trees: List[CodeTree]): List[CodeTree] = {
+    // Ordered insert
+    def insert(fork: Fork, list: List[CodeTree]): List[CodeTree] = {
+      list match {
+        case Fork(l,r,c,w)::xs => if(w>=fork.weight) fork::list else Fork(l,r,c,w)::insert(fork,xs)
+        case Leaf(c,w)::xs => if(w>=fork.weight) fork::list else Leaf(c,w)::insert(fork,xs)
+        case _ => List(fork)
+      }
+    }
+
     trees match {
       case _ :: Nil => trees
-      case x :: y :: remain => new Fork(x, y, chars(x) ::: chars(y), weight(x) + weight(y)) :: remain
+      case Nil => trees
+      case x :: y :: remain => {
+        insert(Fork(x, y, chars(x) ::: chars(y), weight(x) + weight(y)),remain)
+      }
     }
   }
 
