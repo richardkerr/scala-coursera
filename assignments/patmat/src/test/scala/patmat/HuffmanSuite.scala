@@ -96,4 +96,19 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("convert") {
+    new TestTrees {
+      val converted = convert(t1)
+      println("converted: "+converted)
+      //assert(converted === "abba".toList)
+    }
+  }
+
+  test("quickEncode") {
+    new TestTrees {
+      quickEncode(frenchCode,string2Chars("HelloWorld!"))
+
+    }
+  }
+
 }

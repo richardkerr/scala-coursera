@@ -28,12 +28,12 @@ object Huffman {
   // Part 1: Basics
 
   def weight(tree: CodeTree): Int = tree match {
-    case Fork(l, r, _, _) => weight(l) + weight(r)
+    case Fork(_, _, _, w) => w
     case Leaf(_, w) => w
   }
 
   def chars(tree: CodeTree): List[Char] = tree match {
-    case Fork(l, r, _, _) => chars(l) ::: chars(r)
+    case Fork(_, _, c, _) => c
     case Leaf(c, _) => c :: Nil
   }
 
@@ -256,7 +256,8 @@ object Huffman {
 
   // Part 4b: Encoding using code table
 
-  type CodeTable = List[(Char, List[Bit])]
+  type Rocky = (Char,List[Bit])
+  type CodeTable = List[Rocky]
 
   /**
    * This function returns the bit sequence that represents the character `char` in
@@ -276,10 +277,10 @@ object Huffman {
    * sub-trees, think of how to build the code table for the entire tree.
    */
   def convert(tree: CodeTree): CodeTable = {
-    def convertIter(tree: CodeTree, bits: List[Bit]) {
+    def convertIter(tree: CodeTree, bits: List[Bit]): CodeTable = {
       tree match {
-        case Fork(l,r,c,_) =>
-        case Leaf(c,w) => Nil
+        case Fork(l,r,_,_) => mergeCodeTables(convertIter(l,0::bits), convertIter(r,1::bits))
+        case Leaf(c,_) => (c,bits) :: Nil
       }
     }
 
@@ -291,7 +292,9 @@ object Huffman {
    * use it in the `convert` method above, this merge method might also do some transformations
    * on the two parameter code tables.
    */
-  def mergeCodeTables(a: CodeTable, b: CodeTable): CodeTable = ???
+  def mergeCodeTables(a: CodeTable, b: CodeTable): CodeTable = {
+    a ::: b
+  }
 
   /**
    * This function encodes `text` according to the code tree `tree`.
@@ -299,5 +302,16 @@ object Huffman {
    * To speed up the encoding process, it first converts the code tree to a code table
    * and then uses it to perform the actual encoding.
    */
-  def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = ???
+  def quickEncode(tree: CodeTree)(text: List[Char]): List[Bit] = {
+    val table: CodeTable = convert(tree)
+    def mapTree(c: Char): List[Bit] = {
+      table.collectFirst({case x if(x._1==c) => x._2}).head
+    }
+
+    val bitlist: List[List[Bit]] = text.map(mapTree)
+    println(bitlist);
+    val bits: List[Bit] = bitlist.foldLeft(0)(_:::_)
+    println(bits)
+    bits
+  }
 }
