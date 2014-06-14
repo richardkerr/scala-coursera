@@ -40,3 +40,6 @@ def wordOccurrences(w: Word) = {
   val vals: List[Map[Char,Int]] = w.toList.map(c => HashMap(c->1))
   vals.foldLeft(Map[Char,Int]())(merge(_+_))
 }
+
+val occList: List[Map[Occurrences,List[Word]]] = dictionary.map(word=>Map(wordOccurrences(word) -> List[Word](word)))
+occList.foldLeft(Map[Occurrences,List[Word]])(merge(List[Word]())(_:::_))

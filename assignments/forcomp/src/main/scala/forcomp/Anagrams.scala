@@ -36,13 +36,13 @@ object Anagrams {
    *  Note: the uppercase and lowercase version of the character are treated as the
    *  same character, and are represented as a lowercase character in the occurrence list.
    */
-  def merge[A >: Char,B >:Int](f: (B,B) => B)(m: Map[A,B], n: Map[A,B]): Map[A,B] = {
-    m ++ n.map{ case (k,v) => k -> (f(v,m.getOrElse(k,0))) }
+  def merge[A,B](d: B)(f: (B,B) => B)(m: Map[A,B], n: Map[A,B]): Map[A,B] = {
+    m ++ n.map{ case (k,v) => k -> (f(v,m.getOrElse(k,d))) }
   }
 
   def wordOccurrencesMap(w: Word): Map[Char,Int] = {
     val vals: List[Map[Char,Int]] = w.toLowerCase.toList.map(c => HashMap(c->1))
-    vals.foldLeft(Map[Char,Int]())(merge(_+_))
+    vals.foldLeft(Map[Char,Int]())(merge(0)(_+_))
   }
 
   def wordOccurrences(w: Word): Occurrences = {
@@ -52,7 +52,7 @@ object Anagrams {
   /** Converts a sentence into its character occurrence list. */
   def sentenceOccurrences(s: Sentence): Occurrences = {
     val map: List[Map[Char,Int]] = s.map(c=>wordOccurrencesMap(c))
-    map.foldLeft(Map[Char,Int]())(merge(_+_)).toList.sorted
+    map.foldLeft(Map[Char,Int]())(merge(0)(_+_)).toList.sorted
   }
 
 
@@ -72,10 +72,15 @@ object Anagrams {
    *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
    *
    */
-  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = ???
+  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = {
+    val occList: List[Map[Occurrences,List[Word]]] = dictionary.map(word=>HashMap(wordOccurrences(word) -> List[Word](word)))
+    occList.foldLeft(Map[Occurrences,List[Word]]())(merge(List[Word]())(_:::_))
+  }
 
   /** Returns all the anagrams of a given word. */
-  def wordAnagrams(word: Word): List[Word] = ???
+  def wordAnagrams(word: Word): List[Word] = {
+    dictionaryByOccurrences.getOrElse(wordOccurrences(word),Nil)
+  }
 
   /** Returns the list of all subsets of the occurrence list.
    *  This includes the occurrence itself, i.e. `List(('k', 1), ('o', 1))`
@@ -99,7 +104,9 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = {
+
+  }
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    * 
