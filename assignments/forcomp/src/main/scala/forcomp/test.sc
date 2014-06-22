@@ -26,20 +26,15 @@ type Occurrences = List[(Char, Int)]
   */
 val dictionary: List[Word] = loadDictionary
 
-/** Converts the word into its character occurrence list.
-  *
-  *  Note: the uppercase and lowercase version of the character are treated as the
-  *  same character, and are represented as a lowercase character in the occurrence list.
-  */
-def merge[A >: Char,B >:Int](f: (B,B) => B)(m: Map[A,B], n: Map[A,B]): Map[A,B] = {
-  m ++ n.map{ case (k,v) => k -> (f(v,m.getOrElse(k,0))) }
+def wordOccurrencesMap(w: Word): Map[Char,Int] = {
+  w.toLowerCase groupBy(char => char) mapValues(_.length)
 }
 
-def wordOccurrences(w: Word) = {
-  //wordRecurse(w.toLowerCase.toList, Map[Char,Int]()).toList.sorted
-  val vals: List[Map[Char,Int]] = w.toList.map(c => HashMap(c->1))
-  vals.foldLeft(Map[Char,Int]())(merge(_+_))
+def wordOccurrences(w: Word): Occurrences = {
+  wordOccurrencesMap(w).toList.sorted
 }
 
-val occList: List[Map[Occurrences,List[Word]]] = dictionary.map(word=>Map(wordOccurrences(word) -> List[Word](word)))
-occList.foldLeft(Map[Occurrences,List[Word]])(merge(List[Word]())(_:::_))
+val s: Sentence = List[Word](("asdfdsaf"),("assavvv"))
+/** Converts a sentence into its character occurrence list. */
+
+dictionary groupBy wordOccurrences
