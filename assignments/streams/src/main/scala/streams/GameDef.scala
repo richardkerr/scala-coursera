@@ -74,17 +74,35 @@ trait GameDef {
    * In Bloxorz, we can move left, right, Up or down.
    * These moves are encoded as case objects.
    */
-  sealed abstract class Move
-  case object Left  extends Move
-  case object Right extends Move
-  case object Up    extends Move
-  case object Down  extends Move
+  sealed abstract class Move {
+    def move(b: Block) : Block
+  }
+  case object Left  extends Move {
+    def move(b: Block): Block = {
+      b.left
+    }
+  }
+  case object Right extends Move {
+    def move(b: Block): Block = {
+      b.right
+    }
+  }
+  case object Up    extends Move {
+    def move(b: Block): Block = {
+      b.up
+    }
+  }
+  case object Down  extends Move {
+    def move(b: Block): Block = {
+      b.down
+    }
+  }
 
   /**
    * This function returns the block at the start position of
    * the game.
    */
-  def startBlock: Block = ???
+  def startBlock: Block = Block(startPos, startPos)
 
   /**
    * A block is represented by the position of the two cubes that
@@ -134,23 +152,23 @@ trait GameDef {
      * Returns the list of blocks that can be obtained by moving
      * the current block, together with the corresponding move.
      */
-    def neighbors: List[(Block, Move)] = ???
+    def neighbors: List[(Block, Move)] = List[(Block,Move)]((left,Left),(right,Right),(up,Up),(down,Down))
 
     /**
      * Returns the list of positions reachable from the current block
      * which are inside the terrain.
      */
-    def legalNeighbors: List[(Block, Move)] = ???
+    def legalNeighbors: List[(Block, Move)] = neighbors.filter(_._1.isLegal)
 
     /**
      * Returns `true` if the block is standing.
      */
-    def isStanding: Boolean = ???
+    def isStanding: Boolean = (b1.x == b2.x && b1.y == b2.y)
 
     /**
      * Returns `true` if the block is entirely inside the terrain.
      */
-    def isLegal: Boolean = ???
+    def isLegal: Boolean = terrain(b1) && terrain(b2)
 
   }
 }

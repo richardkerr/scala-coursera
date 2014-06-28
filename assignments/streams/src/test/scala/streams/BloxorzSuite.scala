@@ -64,4 +64,18 @@ class BloxorzSuite extends FunSuite {
       assert(solution.length == optsolution.length)
     }
   }
+
+  test("everybody needs good neighbours") {
+    new Level1 {
+      neighborsWithHistory(Block(Pos(0,0),Pos(0,0)),Nil)
+    }
+  }
+
+  test("start?") {
+    new Level1 {
+      //1 to 100 foreach {a =>  println(pathsToGoal(a)) ; a}
+
+      println(solve(solution))
+    }
+  }
 }
